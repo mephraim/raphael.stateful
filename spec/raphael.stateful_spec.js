@@ -21,6 +21,10 @@ Screw.Unit(function() {
   });
   
   describe("the addState function", function() {
+    it("returns the element after being called", function() {
+      expect(rect.addState('test', {})).to(equal, rect);
+    });
+    
     it("adds a state to the element", function() {
       var state = { attrs: { height: 100 } };
       rect.addState('test', state);
@@ -51,6 +55,11 @@ Screw.Unit(function() {
   });
   
   describe("the state function", function() {
+    it("returns the element after being called", function() {
+      rect.addState('test', {});
+      expect(rect.state('test')).to(equal, rect);
+    });
+    
     describe("event handler changes", function() {
       it("clears out event handlers when switching states", function() {
         rect.node.onclick = function() { };
