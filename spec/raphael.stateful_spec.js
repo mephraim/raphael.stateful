@@ -39,28 +39,65 @@ Screw.Unit(function() {
   });
   
   describe("the state function", function() {
-    it("it switches the attributes of the element to match the attributes for the state", function() {
-      rect.addState('test', { 
-        attrs: { height: 100 }
+    describe("event handler changes", function() {
+      it("clears out event handlers when switching states", function() {
+        rect.node.onclick = function() { };
+        rect.addState('test', {});
+        rect.state('test');
+        
+        expect(rect.node.onclick).to(equal, null);
       });
       
-      rect.attr({ height: 0 });
-      rect.state('test');
-      expect(rect.attr('height')).to(equal, 100);
-    });
+      it("creates event handlers for each of the events passed in under handlers", function() {
+        var mouseoverCalled = false,
+            clickCalled = false;
         
-    it("animates with the right speed if a time is passed in", function() {
-      var animationSpeed;
-      rect.animate = function(attr, speed) {
-        animationSpeed = speed;
-      }
-      
-      rect.addState('test', {}); 
-      rect.state('test', { time: 5000 });
-      
-      expect(animationSpeed).to(equal, 5000);
+        rect.addState('test', {
+          handlers: {
+            onmouseover: function() {
+              mouseoverCalled = true;
+            },
+            
+            onclick: function() { 
+              clickCalled = true;
+            }
+          }
+        });
+        
+        rect.state('test');
+        rect.node.onmouseover();
+        rect.node.onclick();
+        
+        expect(mouseoverCalled).to(equal, true);
+        expect(clickCalled).to(equal, true);
+      });
     });
     
+    describe("attribute changes", function() {
+      it("it switches the attributes of the element to match the attributes for the state", function() {
+        rect.addState('test', { 
+          attrs: { height: 100, fill: 'green' }
+        });
+
+        rect.attr({ height: 0, fill: 'blue' });
+        rect.state('test');
+        expect(rect.attr('height')).to(equal, 100);
+        expect(rect.attr('fill')).to(equal, 'green');
+      });
+
+      it("animates with the right speed if a time is passed in", function() {
+        var animationSpeed;
+        rect.animate = function(attr, speed) {
+          animationSpeed = speed;
+        }
+
+        rect.addState('test', {}); 
+        rect.state('test', { time: 5000 });
+
+        expect(animationSpeed).to(equal, 5000);
+      });
+    });
+  
     describe("before callbacks", function() {
       it("executes the before function that was passed in before switching states", function() {
         var stateSwitched = false;
@@ -101,6 +138,21 @@ Screw.Unit(function() {
         rect.state('test', {});
 
         expect(beforeCalled).to(equal, true);
+      });
+    
+      it("only executes before handlers that are related to the element with the state", function() {        
+        var beforeCalled = false;
+        rect.addState('rectTest', {
+          before: function() {
+            beforeCalled = true;
+          }
+        });
+        
+        var circle = paper.circle(0,0,20);
+        circle.addState('circleTest', {});
+        circle.state('circleTest');
+        
+        expect(beforeCalled).to(equal, false);
       });
     });
     
