@@ -55,7 +55,14 @@ Screw.Unit(function() {
   });
   
   describe("the state function", function() {
-    it("returns the element after being called", function() {
+    it("returns the current state after being called without parameters", function() {
+      rect.addState('test', {});
+      rect.state('test');
+      
+      expect(rect.state()).to(equal, 'test');
+    });
+    
+    it("returns the element after being called with parameters", function() {
       rect.addState('test', {});
       expect(rect.state('test')).to(equal, rect);
     });
