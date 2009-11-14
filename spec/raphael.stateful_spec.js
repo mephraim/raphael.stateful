@@ -36,6 +36,18 @@ Screw.Unit(function() {
 
       expect(rect.getState('test')).to(equal, state);
     });
+  
+    it("throws an exception if the state wasn't found", function() {
+      var errorMessage = null
+      try {
+        rect.getState('zzzzz');
+      }
+      catch(e) {
+        errorMessage = e.message;
+      }
+      
+      expect(errorMessage).to(equal, "You tried to find a state that hasn't been added yet.");
+    });
   });
   
   describe("the state function", function() {
