@@ -1,7 +1,7 @@
 Screw.Unit(function() {     
   describe("Stateful plugin for Raphael elements", function() {    
     var paper;
-    var element;
+    var rect;
     before(function() {
       paper = Raphael(0,0,100,100);
       rect = paper.rect(0,0,10,10);
@@ -54,7 +54,7 @@ Screw.Unit(function() {
     });
 
     describe("the state function", function() {
-      it("returns the current state after being called without parameters", function() {
+      it("returns the current state's name after being called without parameters", function() {
         rect.addState('test', {});
         rect.state('test');
 
@@ -270,6 +270,75 @@ Screw.Unit(function() {
 
           expect(afterCalled).to(equal, true);
         });
+      });
+    });
+  });
+  
+  describe("Stateful plugin for Raphael sets", function() {
+    var paper;
+    var set;
+    before(function() {
+      paper = Raphael(0,0,100,100);
+      set = paper.set();
+    });
+    
+    it("adds an addState function Raphael sets", function() {
+      expect(jQuery.isFunction(set.addState)).to(equal, true);
+    });
+    
+    it("add a getState function to Raphael sets", function() {
+      expect(jQuery.isFunction(set.getState)).to(equal, true);
+    });
+    
+    it("adds a state function to Raphael sets", function() {
+      expect(jQuery.isFunction(set.state)).to(equal, true);
+    });
+    
+    describe("the addState function", function() {
+      it("returns the set after being called", function() {
+        expect(set.addState('test', {})).to(equal, set);
+      });
+      
+      it("adds a state to the set", function() {
+        var state = { attrs: { height: 100 } };
+        set.addState('test', state);
+
+        expect(set.getState('test')).to(equal, state);
+      });
+    });
+  
+    describe("the getState function", function() {
+      it("returns the state that matches the name", function() {
+        var state = { attrs: { height: 100 } };
+        set.addState('test', state);
+
+        expect(set.getState('test')).to(equal, state);
+      });
+    
+      it("throws an exception if the state wasn't found", function() {
+        var errorMessage = null
+        try {
+          set.getState('zzzzz');
+        }
+        catch(e) {
+          errorMessage = e.message;
+        }
+
+        expect(errorMessage).to(equal, "You tried to find a state that hasn't been added yet.");
+      });
+    });
+  
+    describe("the state function", function() {
+      it("returns the current state's name after being called without parameters", function() {
+        set.addState('test', {});
+        set.state('test');
+
+        expect(set.state()).to(equal, 'test');
+      });
+      
+      it("returns the set after being called with parameters", function() {
+        set.addState('test', {});
+        expect(set.state('test')).to(equal, set);
       });
     });
   });
