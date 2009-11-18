@@ -15,6 +15,10 @@ Screw.Unit(function() {
       expect(jQuery.isFunction(rect.getState)).to(equal, true);
     });
     
+    it("adds a hasState function to Raphael elements", function() {
+      expect(jQuery.isFunction(rect.hasState)).to(equal, true);
+    });
+    
     it("adds a state function to Raphael elements", function() {
       expect(jQuery.isFunction(rect.state)).to(equal, true);
     });
@@ -50,6 +54,17 @@ Screw.Unit(function() {
         }
 
         expect(errorMessage).to(equal, "You tried to find a state that hasn't been added yet.");
+      });
+    });
+
+    describe("the hasState function", function() {
+      it("returns true if the element has the state", function() {
+        rect.addState('test');
+        expect(rect.hasState('test')).to(equal, true);
+      });
+      
+      it("returns false if the element doesn't have the state", function() {
+        expect(rect.hasState('test')).to(equal, false);
       });
     });
 
@@ -286,8 +301,12 @@ Screw.Unit(function() {
       expect(jQuery.isFunction(set.addState)).to(equal, true);
     });
     
-    it("add a getState function to Raphael sets", function() {
+    it("adds a getState function to Raphael sets", function() {
       expect(jQuery.isFunction(set.getState)).to(equal, true);
+    });
+    
+    it("adds a hasState function to Raphael sets", function() {
+      expect(jQuery.isFunction(set.hasState)).to(equal, true);
     });
     
     it("adds a state function to Raphael sets", function() {
@@ -328,6 +347,17 @@ Screw.Unit(function() {
       });
     });
   
+    describe("the hasState function", function() {
+      it("returns true if the set has the state", function() {
+        set.addState('test');
+        expect(set.hasState('test')).to(equal, true);
+      });
+      
+      it("returns false if the set doesn't have the state", function() {
+        expect(set.hasState('test')).to(equal, false);
+      });
+    });
+  
     describe("the state function", function() {
       it("returns the current state's name after being called without parameters", function() {
         set.addState('test', {});
@@ -339,6 +369,39 @@ Screw.Unit(function() {
       it("returns the set after being called with parameters", function() {
         set.addState('test', {});
         expect(set.state('test')).to(equal, set);
+      });
+    
+      it("sets the state for all of its child elements", function() {
+        var rect   = paper.rect(5, 5, 5, 5).addState('test');     
+        var circle = paper.circle(10, 10, 10).addState('test');
+        set.push(rect, circle);
+        
+        var rectState, circleState;
+        rect.state = function(state) {
+          rectState = state;
+        };
+        
+        circle.state = function(state) {
+          circleState = state;
+        };
+        
+        set.state('test');
+        
+        expect(rectState).to(equal, 'test');
+        expect(circleState).to(equal, 'test');
+      });
+   
+      it("doesn't call the state function on elements that don't have the state", function() {
+        var rect = paper.rect(0, 0, 10, 10);
+        set.push(rect);
+        
+        var stateCalled = false;
+        rect.state = function() {
+          stateCalled = true;
+        };
+        
+        set.state('test');
+        expect(stateCalled).to(equal, false);
       });
     });
   });
