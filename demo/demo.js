@@ -2,6 +2,7 @@ window.onload = function() {
   var paper = Raphael(0,0, 1000, 1000);
   rect(paper);
   circle(paper);
+  set(paper);
 }
 
 function rect(paper) {
@@ -61,6 +62,40 @@ function circle(paper) {
         circle.state('smaller', { time: 500 });
       }
     }
+  });
+}
+
+function set(paper) {
+  var circle = paper.circle(600, 500, 30);
+  circle.addState('normal', {
+    attrs: {
+      r: 30,
+      fill: '#4AC266'
+    }
+  });
+  circle.state('normal');
+  
+  var rect = paper.rect(630, 500, 60, 60);
+  rect.addState('normal', {
+    attrs: {
+      fill: '#4AC296'
+    }
+  });
+  rect.state('normal');
+  
+  rect.addState('shifted', {
+    attrs: {
+      fill: '#27473C',
+      x: 400,
+      y: 400
+    }
+  });
+  
+  var set = paper.set();
+  set.push(circle, rect);
+  
+  set.click(function() {
+    set.state('shifted', { time: 1000 });
   });
 }
 
