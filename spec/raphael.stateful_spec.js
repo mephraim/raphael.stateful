@@ -45,7 +45,7 @@ Screw.Unit(function() {
       });
 
       it("throws an exception if the state wasn't found", function() {
-        var errorMessage = null
+        var errorMessage = null;
         try {
           rect.getState('zzzzz');
         }
@@ -131,7 +131,7 @@ Screw.Unit(function() {
           var animationSpeed;
           rect.animate = function(attr, speed) {
             animationSpeed = speed;
-          }
+          };
 
           rect.addState('test', {}); 
           rect.state('test', { time: 5000 });
@@ -335,7 +335,7 @@ Screw.Unit(function() {
       });
     
       it("throws an exception if the state wasn't found", function() {
-        var errorMessage = null
+        var errorMessage = null;
         try {
           set.getState('zzzzz');
         }
