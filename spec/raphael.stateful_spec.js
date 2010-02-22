@@ -145,6 +145,8 @@ Screw.Unit(function() {
           var stateSwitched = false;
           var beforeCalled = false;
 
+          // This attr function should get called after the before  
+          // callback is run
           rect.attr = function() {
             stateSwitched = true;
           };
@@ -166,6 +168,8 @@ Screw.Unit(function() {
           var stateSwitched = false;
           var beforeCalled = false;
 
+          // This attr function should get called after the before  
+          // callback is run
           rect.attr = function() {
             stateSwitched = true;
           };
@@ -402,6 +406,113 @@ Screw.Unit(function() {
         
         set.state('test');
         expect(stateCalled).to(equal, false);
+      });
+
+      describe("before callbacks", function() {
+        var rect;
+        before(function() {
+          rect = paper.rect(1,1,1,1);
+          rect.addState("test", {});
+        });
+
+        it("executes the before function that was passed in before switching states", function() {
+          var stateSwitched = false;
+          var beforeCalled = false;
+          
+          // This rect's attr function should get called by the state function,
+          // but ideally, only after the before callback was called 
+          rect.attr = function() {
+            stateSwitched = true;
+          };
+          set.push(rect);
+
+          set.addState('test', {});
+          set.state('test', {
+            before: function() {
+              if (!stateSwitched) {
+                beforeCalled = true;
+              }
+            }
+          });
+
+          expect(beforeCalled).to(equal, true);
+        });
+
+        it("executes the before function that is part of the state before switching states", function() {
+          var stateSwitched = false;
+          var beforeCalled = false;
+
+          // This rect's attr function should get called by the state function,
+          // but ideally, only after the state's before callback was called 
+          rect.attr = function() {
+            stateSwitched = true;
+          };
+
+          set.addState('test', {
+            before: function() {
+              if (!stateSwitched) {
+                beforeCalled = true;
+              }
+            }
+          });
+          set.state('test', {});
+
+          expect(beforeCalled).to(equal, true);
+        });
+      });
+
+      describe("after callbacks", function() {
+        var rect;
+        before(function() {
+          rect = paper.rect(1,1,1,1);
+          rect.addState('test', {});
+        });
+
+        it("executes the after function that was passed in after switching states", function() {
+          var stateSwitched = false;
+          var afterCalled = false;
+
+          // This rect's attr function should get called by the state function,
+          // but ideally before the after callback is called 
+          rect.attr = function() {
+            stateSwitched = true;
+          };
+          set.push(rect);
+
+          set.addState('test', {});
+          set.state('test', {
+            after: function() {
+              if (stateSwitched) {
+                afterCalled = true;
+              }
+            }
+          });
+
+          expect(afterCalled).to(equal, true);
+        });
+
+        it("executes the after function that is part of the state after switching states", function() {
+          var stateSwitched = false;
+          var afterCalled = false;
+
+          // This rect's attr function should get called by the state function,
+          // but ideally before the after callback is called 
+          rect.attr = function() {
+            stateSwitched = true;
+          };
+          set.push(rect);
+
+          set.addState('test', {
+            after: function() {
+              if (stateSwitched) {
+                afterCalled = true;
+              }
+            }
+          });
+
+          set.state('test');
+          expect(afterCalled).to(equal, true);
+        });
       });
     });
   });
